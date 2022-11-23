@@ -5,7 +5,7 @@ using UnityEngine;
 public class TP_Shot : MonoBehaviour
 {
 
-    [SerializeField] private float speed = 4f;
+    [SerializeField] private float speed = 3f;
     [SerializeField] private float lifeTime = 2f;
 
     void Start()

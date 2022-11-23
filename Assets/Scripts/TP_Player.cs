@@ -10,7 +10,7 @@ public class TP_Player : MonoBehaviour
 
     public GameObject shotPrefab;
     private bool shootTrigger = true;
-    private float shootCooldown = 0.25f;
+    private float shootCooldown = 0.15f;
 
     private Rigidbody2D playerRigidbody;
 
