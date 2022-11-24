@@ -12,11 +12,19 @@ public class TP_Player : MonoBehaviour
     private bool shootTrigger = true;
     private float shootCooldown = 0.15f;
 
+    private bool canPlay;
+
     private Rigidbody2D playerRigidbody;
+    private GameManager gameManager;
+
+    private bool isBlastColliding = false;
 
     void Start()
     {
+        canPlay = true;
+
         playerRigidbody = GetComponent<Rigidbody2D>();
+        gameManager = FindObjectOfType<GameManager>();
     }
 
     private void Update()
@@ -31,31 +39,36 @@ public class TP_Player : MonoBehaviour
 
     private void Movement()
     {
-        if (Input.GetKey(KeyCode.UpArrow))
+        if (canPlay)
         {
-            playerRigidbody.AddForce(transform.up * forcePower);
-        }
+            if (Input.GetKey(KeyCode.UpArrow))
+            {
+                playerRigidbody.AddForce(transform.up * forcePower);
+            }
 
-        if (Input.GetKey(KeyCode.LeftArrow))
-        {
-            transform.Rotate(transform.rotation * torquePower);
-        }
+            if (Input.GetKey(KeyCode.LeftArrow))
+            {
+                transform.Rotate(transform.rotation * torquePower);
+            }
 
-        if (Input.GetKey(KeyCode.RightArrow))
-        {
-            transform.Rotate(transform.rotation * -torquePower);
-        }
+            if (Input.GetKey(KeyCode.RightArrow))
+            {
+                transform.Rotate(transform.rotation * -torquePower);
+            }
 
-        if (playerRigidbody.velocity.magnitude > maxVelocity)
-        {
-            playerRigidbody.velocity = playerRigidbody.velocity.normalized * maxVelocity;
+            if (playerRigidbody.velocity.magnitude > maxVelocity)
+            {
+                playerRigidbody.velocity = playerRigidbody.velocity.normalized * maxVelocity;
+            }
         }
     }
     private void Shoot()
     {
-        if (Input.GetKey(KeyCode.Space) && shootTrigger)
+        if (Input.GetKey(KeyCode.Space) && shootTrigger && canPlay)
         {
-            Instantiate(shotPrefab, transform.GetChild(0).transform.position, transform.GetChild(0).transform.rotation);
+            GameObject shot = Instantiate(shotPrefab, transform.GetChild(0).transform.position, transform.GetChild(0).transform.rotation);
+
+            shot.GetComponent<TP_Shot>().maxVelocity = shot.GetComponent<TP_Shot>().forcePower + playerRigidbody.velocity.magnitude * 1.5f;
 
             StartCoroutine(ShootCooldown());
         }
@@ -66,5 +79,30 @@ public class TP_Player : MonoBehaviour
         shootTrigger = false;
         yield return new WaitForSeconds(shootCooldown);
         shootTrigger = true;
+    }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("Asteroid"))
+        {
+            if (isBlastColliding) return;
+            isBlastColliding = true;
+
+            gameManager.UpdateLives();
+
+            canPlay = false;
+            gameObject.SetActive(false);
+            gameObject.transform.position = new Vector3(0, 0, 1);
+            gameObject.SetActive(true);
+            canPlay = true;
+
+            StartCoroutine(TriggerEnterOn());
+        }
+    }
+
+    private IEnumerator TriggerEnterOn()
+    {
+        yield return new WaitForEndOfFrame();
+        isBlastColliding = false;
     }
 }

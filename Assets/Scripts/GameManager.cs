@@ -1,10 +1,18 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class GameManager : MonoBehaviour
 {
     public GameObject asteroidPrefab;
+
+    public TextMeshProUGUI scoreNumber;
+
+    public GameObject[] livesSprites;
+
+    private int totalScore;
+    private int totalLives;
 
     private int asteroidsCount = 4;
 
@@ -17,13 +25,17 @@ public class GameManager : MonoBehaviour
     private float xRange = 9f;
     private float yRange = 5f;
 
-    private void Start()
+    private void Awake()
     {
+        totalScore = 0;
+        totalLives = 3;
+
         for (int i = 0; i < asteroidsCount; i++)
         {
             SpawnAsteroid();
         }
     }
+
 
     private void Update()
     {
@@ -63,26 +75,17 @@ public class GameManager : MonoBehaviour
         Instantiate(asteroidPrefab, spawnPosition, spawnRotation);
     }
 
-    public void SpawnAsteroidDestruction(Vector3 asteroidPosition, int type)
+    public void UpdateScore(int value)
     {
-        spawnRotation = RandomRotation();
+        totalScore += value;
 
-        GameObject asteroidSpawned = Instantiate(asteroidPrefab, asteroidPosition, spawnRotation);
+        scoreNumber.text = (totalScore).ToString();
+    }
 
-        if (type == 1)
-        {
-            asteroidSpawned.transform.localScale = new Vector3(1, 1, 1);
+    public void UpdateLives()
+    {
+        totalLives -= 1;
 
-            asteroidSpawned.GetComponent<TP_Asteroid>().type = 2;
-            asteroidSpawned.GetComponent<TP_Asteroid>().speed = 2.5f;
-        }
-
-        if (type == 2)
-        {
-            asteroidSpawned.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
-
-            asteroidSpawned.GetComponent<TP_Asteroid>().type = 3;
-            asteroidSpawned.GetComponent<TP_Asteroid>().speed = 3f;
-        }
+        livesSprites[totalLives].SetActive(false);
     }
 }

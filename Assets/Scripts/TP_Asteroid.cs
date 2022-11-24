@@ -4,34 +4,77 @@ using UnityEngine;
 
 public class TP_Asteroid : MonoBehaviour
 {
-    public int type = 1;
-    public float speed = 2f;
+    public GameObject asteroidPrefab;
+
+    public int size = 1;
+    public float velocity = 2f;
 
     private GameManager gameManager;
 
-
+    private Quaternion spawnRotation;
+    private float randomRotZ;
 
     void Update()
     {
         gameManager = FindObjectOfType<GameManager>();
 
-        transform.Translate(Vector3.up * speed * Time.deltaTime);
+        transform.Translate(Vector3.up * velocity * Time.deltaTime);
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Shot"))
         {
-            if (type == 1 || type == 2)
+            if (size == 1 || size == 2)
             {
                 for (int i = 0; i <= 1; i++)
                 {
-                    gameManager.SpawnAsteroidDestruction(transform.position, type);
+                    spawnRotation = RandomRotation();
+
+                    GameObject asteroidSpawned = Instantiate(asteroidPrefab, transform.position, spawnRotation);
+
+                    if (size == 1)
+                    {
+                        asteroidSpawned.transform.localScale = new Vector3(1, 1, 1);
+
+                        asteroidSpawned.GetComponent<TP_Asteroid>().size = 2;
+                        asteroidSpawned.GetComponent<TP_Asteroid>().velocity = 2.5f;
+                    }
+
+                    if (size == 2)
+                    {
+                        asteroidSpawned.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
+
+                        asteroidSpawned.GetComponent<TP_Asteroid>().size = 3;
+                        asteroidSpawned.GetComponent<TP_Asteroid>().velocity = 3f;
+                    }
                 }
+            }
+
+            if (size == 1)
+            {
+                gameManager.UpdateScore(250);
+            }
+
+            if (size == 2)
+            {
+                gameManager.UpdateScore(100);
+            }
+
+            if (size == 3)
+            {
+                gameManager.UpdateScore(25);
             }
 
             Destroy(other.gameObject);
             Destroy(gameObject);
         }
+    }
+
+    private Quaternion RandomRotation()
+    {
+        randomRotZ = Random.Range(0, 361);
+
+        return Quaternion.Euler(0, 0, randomRotZ);
     }
 }
