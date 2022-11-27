@@ -7,12 +7,15 @@ public class GameManager : MonoBehaviour
 {
     public GameObject asteroidPrefab;
 
-    public TextMeshProUGUI scoreNumber;
+    public GameObject score;
 
     public GameObject[] livesSprites;
 
     private int totalScore;
     private int totalLives;
+
+    private TextMeshProUGUI scoreNumber;
+    private Animation scoreAnimation;
 
     private int asteroidsCount = 4;
 
@@ -22,11 +25,17 @@ public class GameManager : MonoBehaviour
     private float randomPosX, randomPosY;
     private float randomRotZ;
 
-    private float xRange = 9f;
-    private float yRange = 5f;
+    private float maxRangeX = 9f;
+    private float minRangeX = 8f;
+
+    private float maxRangeY = 5f;
+    private float minRangeY = 4f;
 
     private void Awake()
     {
+        scoreNumber = score.GetComponent<TextMeshProUGUI>();
+        scoreAnimation = score.GetComponent<Animation>();
+
         totalScore = 0;
         totalLives = 3;
 
@@ -54,10 +63,21 @@ public class GameManager : MonoBehaviour
 
     private Vector3 RandomPosition()
     {
-        randomPosX = Random.Range(-xRange, xRange);
-        randomPosY = Random.Range(-yRange, yRange);
+        int side = Random.Range(0, 2);
 
-        return new Vector3(randomPosX, randomPosY, 0);
+        if (side == 0)
+        {
+            randomPosX = Random.Range(minRangeX, maxRangeX);
+            randomPosY = Random.Range(-minRangeY, -maxRangeY);
+
+        }
+        else
+        {
+            randomPosX = Random.Range(-minRangeX, -maxRangeX);
+            randomPosY = Random.Range(minRangeY, maxRangeY);
+        }
+
+        return new Vector3(randomPosX, randomPosY, 1);
     }
 
     private Quaternion RandomRotation()
@@ -86,6 +106,13 @@ public class GameManager : MonoBehaviour
     {
         totalLives -= 1;
 
-        livesSprites[totalLives].SetActive(false);
+        if (totalLives <= 0)
+        {
+
+        }
+        else
+        {
+            livesSprites[totalLives].SetActive(false);
+        }
     }
 }
