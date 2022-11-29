@@ -10,7 +10,7 @@ public class TP_Shot : MonoBehaviour
     public float maxVelocity = 3f;
     [SerializeField] private float lifeTime = 2f;
 
-    public Rigidbody2D shotRigidbody;
+    private Rigidbody2D shotRigidbody;
 
     private void Awake()
     {
@@ -25,7 +25,6 @@ public class TP_Shot : MonoBehaviour
     private void FixedUpdate()
     {
         shotRigidbody.AddForce(transform.up * forcePower,ForceMode2D.Impulse);
-
 
         if (shotRigidbody.velocity.magnitude > maxVelocity)
         {

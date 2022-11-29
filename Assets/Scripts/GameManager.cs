@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using TMPro;
 
 public class GameManager : MonoBehaviour
@@ -11,11 +12,13 @@ public class GameManager : MonoBehaviour
 
     public GameObject[] livesSprites;
 
+    private DataPersistence dataPersistence;
+
     private int totalScore;
     private int totalLives;
 
     private TextMeshProUGUI scoreNumber;
-    private Animation scoreAnimation;
+    public Animator scoreAnimator;
 
     private int asteroidsCount = 4;
 
@@ -31,10 +34,10 @@ public class GameManager : MonoBehaviour
     private float maxRangeY = 5f;
     private float minRangeY = 4f;
 
-    private void Awake()
+    private void Start()
     {
+        dataPersistence = FindObjectOfType<DataPersistence>();
         scoreNumber = score.GetComponent<TextMeshProUGUI>();
-        scoreAnimation = score.GetComponent<Animation>();
 
         totalScore = 0;
         totalLives = 3;
@@ -97,6 +100,10 @@ public class GameManager : MonoBehaviour
 
     public void UpdateScore(int value)
     {
+       
+            scoreAnimator.Play("ScoreUpdateAnim");
+        
+
         totalScore += value;
 
         scoreNumber.text = (totalScore).ToString();
@@ -108,7 +115,9 @@ public class GameManager : MonoBehaviour
 
         if (totalLives <= 0)
         {
+            dataPersistence.SetString("SCORE",scoreNumber.text);
 
+            SceneManager.LoadScene("TP_GameOver");
         }
         else
         {

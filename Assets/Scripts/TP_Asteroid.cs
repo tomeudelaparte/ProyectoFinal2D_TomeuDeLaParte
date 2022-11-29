@@ -5,6 +5,7 @@ using UnityEngine;
 public class TP_Asteroid : MonoBehaviour
 {
     public GameObject asteroidPrefab;
+    public GameObject shotParticles;
 
     public int size = 1;
     public float velocity = 2f;
@@ -25,6 +26,8 @@ public class TP_Asteroid : MonoBehaviour
     {
         if (other.CompareTag("Shot"))
         {
+            Instantiate(shotParticles, transform.position, transform.rotation);
+
             if (size == 1 || size == 2)
             {
                 for (int i = 0; i <= 1; i++)

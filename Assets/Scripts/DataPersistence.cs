@@ -4,6 +4,11 @@ using UnityEngine;
 
 public class DataPersistence : MonoBehaviour
 {
+    private void Start()
+    {
+        DontDestroyOnLoad(gameObject);
+    }
+
     // Devuelve un int mediante una key proporcionada
     public int GetInt(string key)
     {
