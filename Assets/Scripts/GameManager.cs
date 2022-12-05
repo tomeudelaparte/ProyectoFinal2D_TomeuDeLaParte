@@ -101,9 +101,8 @@ public class GameManager : MonoBehaviour
     public void UpdateScore(int value)
     {
        
-            scoreAnimator.Play("ScoreUpdateAnim");
+        scoreAnimator.Play("ScoreUpdateAnim");
         
-
         totalScore += value;
 
         scoreNumber.text = (totalScore).ToString();
@@ -115,13 +114,20 @@ public class GameManager : MonoBehaviour
 
         if (totalLives <= 0)
         {
-            dataPersistence.SetString("SCORE",scoreNumber.text);
+            dataPersistence.SetString("SCORE", scoreNumber.text);
 
             SceneManager.LoadScene("TP_GameOver");
         }
         else
         {
-            livesSprites[totalLives].SetActive(false);
+           StartCoroutine(UpdateScoreLivesAnimation());
         }
+    }
+
+    public IEnumerator UpdateScoreLivesAnimation()
+    {
+        livesSprites[totalLives].GetComponent<Animator>().Play("LivesUpdateAnim");
+        yield return new WaitForSeconds(0.5f);
+        livesSprites[totalLives].SetActive(false);   
     }
 }

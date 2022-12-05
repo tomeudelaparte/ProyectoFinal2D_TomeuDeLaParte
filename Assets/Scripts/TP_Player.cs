@@ -39,7 +39,7 @@ public class TP_Player : MonoBehaviour
     private void Movement()
     {
 
-        if (Input.GetKey(KeyCode.UpArrow))
+        if (Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.W))
         {
             playerRigidbody.AddForce(transform.up * forcePower);
 
@@ -53,15 +53,17 @@ public class TP_Player : MonoBehaviour
             if (propulse.isPlaying)
             {
                 propulse.Stop();
+
+                playerRigidbody.velocity *= new Vector2(0.96f,0.96f);
             }
         }
 
-        if (Input.GetKey(KeyCode.LeftArrow))
+        if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A))
         {
             transform.Rotate(transform.rotation * torquePower);
         }
 
-        if (Input.GetKey(KeyCode.RightArrow))
+        if (Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D))
         {
             transform.Rotate(transform.rotation * -torquePower);
         }
