@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: e461935e498ac8e4cb2bfbca4a925769
+guid: 50ffb1753d08a7b4cb75134cd07b7569
 TrueTypeFontImporter:
   externalObjects: {}
   serializedVersion: 4
@@ -9,7 +9,7 @@ TrueTypeFontImporter:
   characterPadding: 1
   includeFontData: 1
   fontNames:
-  - The Led Display St
+  - Arcade Interlaced
   fallbackFontReferences: []
   customCharacters: 
   fontRenderingMode: 0

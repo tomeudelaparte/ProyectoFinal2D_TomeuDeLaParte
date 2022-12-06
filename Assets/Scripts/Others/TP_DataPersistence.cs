@@ -2,13 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DataPersistence : MonoBehaviour
+public class TP_DataPersistence : MonoBehaviour
 {
-    private void Start()
-    {
-        DontDestroyOnLoad(gameObject);
-    }
-
     // Devuelve un int mediante una key proporcionada
     public int GetInt(string key)
     {

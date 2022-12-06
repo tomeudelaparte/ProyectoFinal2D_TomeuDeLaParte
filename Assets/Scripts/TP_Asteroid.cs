@@ -5,72 +5,72 @@ using UnityEngine;
 public class TP_Asteroid : MonoBehaviour
 {
     public GameObject asteroidPrefab;
-    public GameObject shotParticles;
+    public GameObject explosionParticles;
 
-    public int size = 1;
-    public float velocity = 2f;
+    private TP_GameManager gameManager;
+    private TP_AudioManager audioManager;
 
-    private GameManager gameManager;
+    public int asteroidID = 1;
+
+    private float velocity = 2f;
 
     private Quaternion spawnRotation;
     private float randomRotZ;
 
+    private bool isBlastColliding = false;
+
+    private void Start()
+    {
+        gameManager = FindObjectOfType<TP_GameManager>();
+        audioManager = FindObjectOfType<TP_AudioManager>();
+
+        TransformBehaviour();
+    }
+
     void Update()
     {
-        gameManager = FindObjectOfType<GameManager>();
-
         transform.Translate(Vector3.up * velocity * Time.deltaTime);
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
+    private void TransformBehaviour()
     {
-        if (other.CompareTag("Shot"))
+        if (asteroidID == 1)
         {
-            Instantiate(shotParticles, transform.position, transform.rotation);
+            transform.localScale = new Vector3(2, 2, 2);
 
-            if (size == 1 || size == 2)
-            {
-                for (int i = 0; i <= 1; i++)
-                {
-                    spawnRotation = RandomRotation();
+            velocity = 2f;
+        }
 
-                    GameObject asteroidSpawned = Instantiate(asteroidPrefab, transform.position, spawnRotation);
+        if (asteroidID == 2)
+        {
+            transform.localScale = new Vector3(1f, 1f, 1f);
 
-                    if (size == 1)
-                    {
-                        asteroidSpawned.transform.localScale = new Vector3(1, 1, 1);
+            velocity = 2.5f;
+        }
 
-                        asteroidSpawned.GetComponent<TP_Asteroid>().size = 2;
-                        asteroidSpawned.GetComponent<TP_Asteroid>().velocity = 2.5f;
-                    }
+        if (asteroidID == 3)
+        {
+            transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
 
-                    if (size == 2)
-                    {
-                        asteroidSpawned.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
+            velocity = 3f;
+        }
+    }
 
-                        asteroidSpawned.GetComponent<TP_Asteroid>().size = 3;
-                        asteroidSpawned.GetComponent<TP_Asteroid>().velocity = 3f;
-                    }
-                }
-            }
+    private void AsteroidScore()
+    {
+        if (asteroidID == 1)
+        {
+            gameManager.UpdateScore(250);
+        }
 
-            if (size == 1)
-            {
-                gameManager.UpdateScore(250);
-            }
+        if (asteroidID == 2)
+        {
+            gameManager.UpdateScore(100);
+        }
 
-            if (size == 2)
-            {
-                gameManager.UpdateScore(100);
-            }
-
-            if (size == 3)
-            {
-                gameManager.UpdateScore(25);
-            }
-
-            Destroy(other.gameObject);
-            Destroy(gameObject);
+        if (asteroidID == 3)
+        {
+            gameManager.UpdateScore(25);
         }
     }
 
@@ -79,5 +79,51 @@ public class TP_Asteroid : MonoBehaviour
         randomRotZ = Random.Range(0, 361);
 
         return Quaternion.Euler(0, 0, randomRotZ);
+    }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("Shot"))
+        {
+            if (isBlastColliding) return;
+            isBlastColliding = true;
+
+            Instantiate(explosionParticles, transform.position, transform.rotation);
+
+            if (asteroidID == 1 || asteroidID == 2)
+            {
+                for (int i = 0; i <= 1; i++)
+                {
+                    spawnRotation = RandomRotation();
+
+                    GameObject asteroidSpawned = Instantiate(asteroidPrefab, transform.position, spawnRotation);
+
+                    if (asteroidID == 1)
+                    {
+                        asteroidSpawned.GetComponent<TP_Asteroid>().asteroidID = 2;
+                    }
+
+                    if (asteroidID == 2)
+                    {
+                        asteroidSpawned.GetComponent<TP_Asteroid>().asteroidID = 3;
+                    }
+                }
+            }
+
+            AsteroidScore();
+
+            audioManager.PlayAudioScore();
+
+            Destroy(other.gameObject);
+            Destroy(gameObject);
+
+            StartCoroutine(TriggerEnterOn());
+        }
+    }
+
+    private IEnumerator TriggerEnterOn()
+    {
+        yield return new WaitForEndOfFrame();
+        isBlastColliding = false;
     }
 }

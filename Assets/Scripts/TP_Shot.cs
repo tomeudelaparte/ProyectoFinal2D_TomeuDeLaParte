@@ -12,13 +12,9 @@ public class TP_Shot : MonoBehaviour
 
     private Rigidbody2D shotRigidbody;
 
-    private void Awake()
-    {
-        shotRigidbody = GetComponent<Rigidbody2D>();
-    }
-
     void Start()
     {
+        shotRigidbody = GetComponent<Rigidbody2D>();
         Destroy(gameObject, lifeTime);
     }
 

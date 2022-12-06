@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using TMPro;
 
-public class GameManager : MonoBehaviour
+public class TP_GameManager : MonoBehaviour
 {
     public GameObject asteroidPrefab;
 
@@ -12,7 +12,8 @@ public class GameManager : MonoBehaviour
 
     public GameObject[] livesSprites;
 
-    private DataPersistence dataPersistence;
+    private TP_PlayerController playerController;
+    private TP_DataPersistence dataPersistence;
 
     private int totalScore;
     private int totalLives;
@@ -36,7 +37,11 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        dataPersistence = FindObjectOfType<DataPersistence>();
+        Time.timeScale = 1;
+
+        dataPersistence = FindObjectOfType<TP_DataPersistence>();
+        playerController = FindObjectOfType<TP_PlayerController>();
+
         scoreNumber = score.GetComponent<TextMeshProUGUI>();
 
         totalScore = 0;
@@ -48,13 +53,19 @@ public class GameManager : MonoBehaviour
         }
     }
 
-
     private void Update()
     {
         int asteroidsInScene = GameObject.FindGameObjectsWithTag("Asteroid").Length;
 
         if (asteroidsInScene <= 0)
         {
+            playerController.gameObject.transform.position = new Vector3(0,0,1);
+
+            foreach(TP_Shot shot in FindObjectsOfType<TP_Shot>())
+            {
+                Destroy(shot.gameObject);
+            }
+
             asteroidsCount++;
 
             for (int i = 0; i < asteroidsCount; i++)
@@ -100,9 +111,8 @@ public class GameManager : MonoBehaviour
 
     public void UpdateScore(int value)
     {
-       
-        scoreAnimator.Play("ScoreUpdateAnim");
-        
+        scoreAnimator.Play("ScoreUpdate");
+
         totalScore += value;
 
         scoreNumber.text = (totalScore).ToString();
@@ -114,20 +124,20 @@ public class GameManager : MonoBehaviour
 
         if (totalLives <= 0)
         {
-            dataPersistence.SetString("SCORE", scoreNumber.text);
+            dataPersistence.SetInt("CURRENT SCORE", totalScore);
 
             SceneManager.LoadScene("TP_GameOver");
         }
         else
         {
-           StartCoroutine(UpdateScoreLivesAnimation());
+            StartCoroutine(UpdateScoreLivesAnimation());
         }
     }
 
     public IEnumerator UpdateScoreLivesAnimation()
     {
-        livesSprites[totalLives].GetComponent<Animator>().Play("LivesUpdateAnim");
+        livesSprites[totalLives].GetComponent<Animator>().Play("LivesUpdate");
         yield return new WaitForSeconds(0.5f);
-        livesSprites[totalLives].SetActive(false);   
+        livesSprites[totalLives].SetActive(false);
     }
 }

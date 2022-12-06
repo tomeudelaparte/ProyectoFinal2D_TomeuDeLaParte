@@ -113,9 +113,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   asteroidPrefab: {fileID: 9077721919009965202}
-  shotParticles: {fileID: 5233358878953910643, guid: ac5058adeed1d8746bed8121476cb757, type: 3}
-  size: 1
-  velocity: 2
+  explosionParticles: {fileID: 5233358878953910643, guid: ac5058adeed1d8746bed8121476cb757, type: 3}
+  asteroidID: 1
 --- !u!61 &-5065401908827210380
 BoxCollider2D:
   m_ObjectHideFlags: 0
