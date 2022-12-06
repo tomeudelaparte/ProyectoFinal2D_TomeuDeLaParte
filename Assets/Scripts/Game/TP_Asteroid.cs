@@ -4,20 +4,20 @@ using UnityEngine;
 
 public class TP_Asteroid : MonoBehaviour
 {
+    public int asteroidID = 1;
+
     public GameObject asteroidPrefab;
     public GameObject explosionParticles;
 
     private TP_GameManager gameManager;
     private TP_AudioManager audioManager;
 
-    public int asteroidID = 1;
-
     private float velocity = 2f;
 
     private Quaternion spawnRotation;
     private float randomRotZ;
 
-    private bool isBlastColliding = false;
+    private bool isTriggering = false;
 
     private void Start()
     {
@@ -30,6 +30,46 @@ public class TP_Asteroid : MonoBehaviour
     void Update()
     {
         transform.Translate(Vector3.up * velocity * Time.deltaTime);
+    }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("Shot"))
+        {
+            if (isTriggering) return;
+            isTriggering = true;
+
+            Instantiate(explosionParticles, transform.position, transform.rotation);
+
+            if (asteroidID == 1 || asteroidID == 2)
+            {
+                for (int i = 0; i <= 1; i++)
+                {
+                    spawnRotation = RandomRotation();
+
+                    GameObject asteroidSpawned = Instantiate(asteroidPrefab, transform.position, spawnRotation);
+
+                    if (asteroidID == 1)
+                    {
+                        asteroidSpawned.GetComponent<TP_Asteroid>().asteroidID = 2;
+                    }
+
+                    if (asteroidID == 2)
+                    {
+                        asteroidSpawned.GetComponent<TP_Asteroid>().asteroidID = 3;
+                    }
+                }
+            }
+
+            AsteroidScore();
+
+            audioManager.PlayAudioScore();
+
+            Destroy(other.gameObject);
+            Destroy(gameObject);
+
+            StartCoroutine(TriggerEnterOn());
+        }
     }
 
     private void TransformBehaviour()
@@ -81,49 +121,9 @@ public class TP_Asteroid : MonoBehaviour
         return Quaternion.Euler(0, 0, randomRotZ);
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
-    {
-        if (other.CompareTag("Shot"))
-        {
-            if (isBlastColliding) return;
-            isBlastColliding = true;
-
-            Instantiate(explosionParticles, transform.position, transform.rotation);
-
-            if (asteroidID == 1 || asteroidID == 2)
-            {
-                for (int i = 0; i <= 1; i++)
-                {
-                    spawnRotation = RandomRotation();
-
-                    GameObject asteroidSpawned = Instantiate(asteroidPrefab, transform.position, spawnRotation);
-
-                    if (asteroidID == 1)
-                    {
-                        asteroidSpawned.GetComponent<TP_Asteroid>().asteroidID = 2;
-                    }
-
-                    if (asteroidID == 2)
-                    {
-                        asteroidSpawned.GetComponent<TP_Asteroid>().asteroidID = 3;
-                    }
-                }
-            }
-
-            AsteroidScore();
-
-            audioManager.PlayAudioScore();
-
-            Destroy(other.gameObject);
-            Destroy(gameObject);
-
-            StartCoroutine(TriggerEnterOn());
-        }
-    }
-
     private IEnumerator TriggerEnterOn()
     {
         yield return new WaitForEndOfFrame();
-        isBlastColliding = false;
+        isTriggering = false;
     }
 }

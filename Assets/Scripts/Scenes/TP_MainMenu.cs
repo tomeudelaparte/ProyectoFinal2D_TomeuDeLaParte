@@ -26,6 +26,8 @@ public class TP_MainMenu : MonoBehaviour
 
         QualitySettings.vSyncCount = 1;
 
+        Cursor.visible = true;
+
         for (int i = 0; i < asteroidsCount; i++)
         {
             if (i < 2)

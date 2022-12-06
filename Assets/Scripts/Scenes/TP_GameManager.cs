@@ -15,8 +15,8 @@ public class TP_GameManager : MonoBehaviour
     private TP_PlayerController playerController;
     private TP_DataPersistence dataPersistence;
 
-    private int totalScore;
-    private int totalLives;
+    private int totalScore = 0;
+    private int totalLives = 3;
 
     private TextMeshProUGUI scoreNumber;
     public Animator scoreAnimator;
@@ -39,13 +39,12 @@ public class TP_GameManager : MonoBehaviour
     {
         Time.timeScale = 1;
 
+        Cursor.visible = false;
+
         dataPersistence = FindObjectOfType<TP_DataPersistence>();
         playerController = FindObjectOfType<TP_PlayerController>();
 
         scoreNumber = score.GetComponent<TextMeshProUGUI>();
-
-        totalScore = 0;
-        totalLives = 3;
 
         for (int i = 0; i < asteroidsCount; i++)
         {
@@ -59,9 +58,9 @@ public class TP_GameManager : MonoBehaviour
 
         if (asteroidsInScene <= 0)
         {
-            playerController.gameObject.transform.position = new Vector3(0,0,1);
+            playerController.RespawnPlayerRound();
 
-            foreach(TP_Shot shot in FindObjectsOfType<TP_Shot>())
+            foreach (TP_Shot shot in FindObjectsOfType<TP_Shot>())
             {
                 Destroy(shot.gameObject);
             }

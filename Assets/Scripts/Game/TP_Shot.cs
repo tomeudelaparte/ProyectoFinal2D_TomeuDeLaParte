@@ -4,13 +4,12 @@ using UnityEngine;
 
 public class TP_Shot : MonoBehaviour
 {
-
     public float forcePower = 3f;
-
     public float maxVelocity = 3f;
-    [SerializeField] private float lifeTime = 2f;
 
     private Rigidbody2D shotRigidbody;
+
+    private float lifeTime = 2f;
 
     void Start()
     {

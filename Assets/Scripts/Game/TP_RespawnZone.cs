@@ -18,7 +18,6 @@ public class TP_RespawnZone : MonoBehaviour
     {
         if (other.CompareTag("Asteroid"))
         {
-
             isSafe = true;
         }
     }

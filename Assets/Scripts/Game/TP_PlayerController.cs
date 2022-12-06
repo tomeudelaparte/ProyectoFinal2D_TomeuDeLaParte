@@ -15,7 +15,6 @@ public class TP_PlayerController : MonoBehaviour
     private TP_GameManager gameManager;
     private Rigidbody2D _playerRigidbody;
     private PolygonCollider2D _playerCollider;
-    private SpriteRenderer _playerRenderer;
     private Animator _playerAnimator;
     private TP_AudioManager audioManager;
 
@@ -23,7 +22,7 @@ public class TP_PlayerController : MonoBehaviour
     private float shootCooldown = 0.15f;
 
     private bool canMove = true;
-    private bool isBlastColliding = false;
+    private bool isTriggering = false;
 
     void Start()
     {
@@ -32,7 +31,6 @@ public class TP_PlayerController : MonoBehaviour
 
         _playerRigidbody = GetComponent<Rigidbody2D>();
         _playerCollider = GetComponent<PolygonCollider2D>();
-        _playerRenderer = GetComponent<SpriteRenderer>();
         _playerAnimator = GetComponent<Animator>();
 
         propulse.Stop();
@@ -111,8 +109,8 @@ public class TP_PlayerController : MonoBehaviour
     {
         if (other.CompareTag("Asteroid"))
         {
-            if (isBlastColliding) return;
-            isBlastColliding = true;
+            if (isTriggering) return;
+            isTriggering = true;
 
             gameManager.UpdateLives();
 
@@ -127,7 +125,7 @@ public class TP_PlayerController : MonoBehaviour
         canMove = false;
         _playerCollider.enabled = false;
 
-        transform.position = new Vector3(0, 0, 1);
+        transform.position = respawnZone.transform.position;
         _playerRigidbody.velocity = Vector2.zero;
 
         _playerAnimator.Play("PlayerRespawn");
@@ -149,10 +147,15 @@ public class TP_PlayerController : MonoBehaviour
         }
     }
 
+    public void RespawnPlayerRound()
+    {
+        transform.position = respawnZone.transform.position;
+        _playerRigidbody.velocity = Vector2.zero;
+    }
+
     private IEnumerator TriggerEnterOn()
     {
         yield return new WaitForEndOfFrame();
-        isBlastColliding = false;
+        isTriggering = false;
     }
-
 }

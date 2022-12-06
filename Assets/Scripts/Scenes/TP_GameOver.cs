@@ -16,6 +16,8 @@ public class TP_GameOver : MonoBehaviour
     {
         Time.timeScale = 1;
 
+        Cursor.visible = true;
+
         dataPersistence = FindObjectOfType<TP_DataPersistence>();
 
         currentScore = dataPersistence.GetInt("CURRENT SCORE");
