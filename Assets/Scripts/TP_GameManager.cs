@@ -6,84 +6,96 @@ using TMPro;
 
 public class TP_GameManager : MonoBehaviour
 {
+    // Public references
     public GameObject asteroidPrefab;
-
-    public GameObject score;
-
+    public GameObject scoreText;
+    public Animator scoreAnimator;
     public GameObject[] livesSprites;
 
+    // Private references
     private TP_PlayerController playerController;
     private TP_DataPersistence dataPersistence;
+    private TextMeshProUGUI scoreNumber;
+
+    // Important values
+    private int totalAsteroids = 4;
 
     private int totalScore = 0;
     private int totalLives = 3;
 
-    private TextMeshProUGUI scoreNumber;
-    public Animator scoreAnimator;
-
-    private int asteroidsCount = 4;
-
-    private Vector3 spawnPosition;
-    private Quaternion spawnRotation;
-
-    private float randomPosX, randomPosY;
-    private float randomRotZ;
-
+    // Screen bounds
     private float maxRangeX = 9f;
     private float minRangeX = 8f;
 
     private float maxRangeY = 5f;
     private float minRangeY = 4f;
 
+    // Random values
+    private Vector3 spawnPosition;
+    private Quaternion spawnRotation;
+
+    private float randomPosX, randomPosY;
+    private float randomRotZ;
+
     private void Start()
     {
-        Time.timeScale = 1;
-
-        Cursor.visible = false;
-
+        // Gets references
         dataPersistence = FindObjectOfType<TP_DataPersistence>();
         playerController = FindObjectOfType<TP_PlayerController>();
 
-        scoreNumber = score.GetComponent<TextMeshProUGUI>();
+        scoreNumber = scoreText.GetComponent<TextMeshProUGUI>();
 
-        for (int i = 0; i < asteroidsCount; i++)
-        {
-            SpawnAsteroid();
-        }
+        // Unpauses the game
+        Time.timeScale = 1;
+
+        // Hides the cursor
+        Cursor.visible = false;
     }
 
     private void Update()
     {
+        // Check the remaining asteroids and spawns a new round
+        SpawnRound();
+    }
+
+    // Spawns a round of asteroids
+    private void SpawnRound()
+    {
+        // Gets the number of remaining asteroids
         int asteroidsInScene = GameObject.FindGameObjectsWithTag("Asteroid").Length;
 
+        // If the number is less than or equal to 0
         if (asteroidsInScene <= 0)
         {
+            // Repositions the player and remove all player shots
             playerController.RespawnPlayerRound();
 
-            foreach (TP_Shot shot in FindObjectsOfType<TP_Shot>())
-            {
-                Destroy(shot.gameObject);
-            }
+            // Adds +1 to total of asteroids
+            totalAsteroids++;
 
-            asteroidsCount++;
-
-            for (int i = 0; i < asteroidsCount; i++)
+            // Spawns a number of times according to the total number of asteroids
+            for (int i = 0; i < totalAsteroids; i++)
             {
                 SpawnAsteroid();
             }
         }
     }
 
+    // Returns a random position 
     private Vector3 RandomPosition()
     {
+        // Random choose between 0 and 1
         int side = Random.Range(0, 2);
 
+        // Returns a random position with +X and -Y
         if (side == 0)
         {
             randomPosX = Random.Range(minRangeX, maxRangeX);
             randomPosY = Random.Range(-minRangeY, -maxRangeY);
 
         }
+
+        // Returns a random position with -X and +Y
         else
         {
             randomPosX = Random.Range(-minRangeX, -maxRangeX);
@@ -93,13 +105,16 @@ public class TP_GameManager : MonoBehaviour
         return new Vector3(randomPosX, randomPosY, 1);
     }
 
+    // Returns a random rotation in Z
     private Quaternion RandomRotation()
     {
+        // Random value between 0 and 360
         randomRotZ = Random.Range(0, 361);
 
         return Quaternion.Euler(0, 0, randomRotZ);
     }
 
+    // Spawns an asteroid with a random position and rotation.
     private void SpawnAsteroid()
     {
         spawnPosition = RandomPosition();
@@ -108,33 +123,44 @@ public class TP_GameManager : MonoBehaviour
         Instantiate(asteroidPrefab, spawnPosition, spawnRotation);
     }
 
+    // Updates game score
     public void UpdateScore(int value)
     {
-        scoreAnimator.Play("ScoreUpdate");
-
+        // Updates the total score
         totalScore += value;
 
         scoreNumber.text = (totalScore).ToString();
+
+        // Plays the animation
+        scoreAnimator.Play("ScoreUpdate");
     }
 
+    // Updates lives remaining
     public void UpdateLives()
     {
-        totalLives -= 1;
+        // Subtract -1 from the total
+        totalLives--;
 
+        // If the total lives are less than or equal to 0
         if (totalLives <= 0)
         {
+            // Saves current score in Player Prefs
             dataPersistence.SetInt("CURRENT SCORE", totalScore);
 
+            // Loads the game over scene
             SceneManager.LoadScene("TP_GameOver");
         }
         else
         {
-            StartCoroutine(UpdateScoreLivesAnimation());
+            // Execute the animation
+            StartCoroutine(LivesAnimation());
         }
     }
 
-    public IEnumerator UpdateScoreLivesAnimation()
+    // Animation to show when the player loose a life
+    private IEnumerator LivesAnimation()
     {
+        // Plays the animation and sets active to false
         livesSprites[totalLives].GetComponent<Animator>().Play("LivesUpdate");
         yield return new WaitForSeconds(0.5f);
         livesSprites[totalLives].SetActive(false);

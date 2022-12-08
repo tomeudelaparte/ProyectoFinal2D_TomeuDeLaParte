@@ -26,9 +26,11 @@ public class TP_AudioOptions : MonoBehaviour
     {
         dataPersistence = FindObjectOfType<TP_DataPersistence>();
 
+        // Load the settings
         LoadSavedSettings();
     }
 
+    // Load the settings
     private void LoadSavedSettings()
     {
         GetGeneralVolume();
@@ -36,54 +38,72 @@ public class TP_AudioOptions : MonoBehaviour
         GetEffectsVolume();
     }
 
+    // Gets the General Volume option
     public void GetGeneralVolume()
     {
+        // If it does not exist, stores a default value
         if (!dataPersistence.HasKey("General Volume"))
         {
             SetGeneralVolume(DefaultGeneralVolume);
         }
 
+        // Gets the saved value
         generalSlider.value = dataPersistence.GetFloat("General Volume");
     }
 
+    // Gets the Music Volume option.
     public void GetMusicVolume()
     {
+        // If it does not exist, stores a default value
         if (!dataPersistence.HasKey("Music Volume"))
         {
             SetMusicVolume(DefaultMusicVolume);
         }
 
+        // Gets the saved value
         musicSlider.value = dataPersistence.GetFloat("Music Volume");
     }
 
+    // Gets the Effects Volume option.
     public void GetEffectsVolume()
     {
+        // If it does not exist, stores a default value
         if (!dataPersistence.HasKey("Effects Volume"))
         {
             SetEffectsVolume(DefaultEffectsVolume);
         }
 
+        // Gets the saved value
         effectSlider.value = dataPersistence.GetFloat("Effects Volume");
     }
 
+    // Sets the General Volume option.
     public void SetGeneralVolume(float volume)
     {
+        // Change the volume in the AudioMixer
         audioMixer.SetFloat("General Volume", Mathf.Log10(volume) * 20);
 
+        // Save the option
         dataPersistence.SetFloat("General Volume", volume);
     }
 
+    // Set the Music Volume option.
     public void SetMusicVolume(float volume)
     {
+        // Change the volume in the AudioMixer
         audioMixer.SetFloat("Music Volume", Mathf.Log10(volume) * 20);
 
+        // Save the option
         dataPersistence.SetFloat("Music Volume", volume);
     }
 
+    // Set the Effects Volume option.
     public void SetEffectsVolume(float volume)
     {
+        // Change the volume in the AudioMixer
         audioMixer.SetFloat("Effects Volume", Mathf.Log10(volume) * 20);
 
+        // Save the option
         dataPersistence.SetFloat("Effects Volume", volume);
     }
 }
